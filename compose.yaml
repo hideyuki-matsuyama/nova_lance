@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:16
+    container_name: nova_lance_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: nova_lance_development
+      TZ: "Asia/Tokyo"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - nova_lance_network
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: nova_lance_api
+    command: >
+      bash -c "
+        echo 'Waiting for database to be ready...' &&
+        bundle check
+        bundle exec rails db:prepare &&
+        bundle exec puma -C config/puma.rb
+      "
+    volumes:
+      - ./api:/rails_api
+    ports:
+      - "3000:3000"
+    environment:
+      BUNDLE_WITHOUT: ""
+      RAILS_ENV: development
+      RAILS_LOG_TO_STDOUT: true
+      DATABASE_HOST: db
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: password
+      DATABASE_NAME: nova_lance_development
+    depends_on:
+      - db
+    networks:
+      - nova_lance_network
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
+  bundle_cache:
+
+networks:
+  nova_lance_network:
+    driver: bridge
