@@ -1,5 +1,4 @@
-# .github/workflows/ci.yml (リポジトリルートに配置)
-name: CI
+name: Build API
 
 on:
   pull_request:
@@ -16,16 +15,14 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version-file: "api/.ruby-version" # api/ ディレクトリ内の .ruby-version を参照
-          # bundler-cache は、working-directory との組み合わせで設定するか、
-          # このステップから削除し、次のステップで明示的に bundle install する
+          ruby-version: "api/.ruby-version"
 
-      - name: Install API dependencies # scan の前に gem が必要なため
-        working-directory: ./api # api/ ディレクトリで実行
+      - name: Install API dependencies
+        working-directory: ./api
         run: bundle install --jobs 4 --retry 3
 
       - name: Scan for common Rails security vulnerabilities using static analysis
-        working-directory: ./api # api/ ディレクトリで実行
+        working-directory: ./api
         run: bin/brakeman --no-pager
 
   lint:
@@ -37,30 +34,28 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version-file: "api/.ruby-version"
+          ruby-version: "api/.ruby-version"
 
       - name: Install API dependencies
-        working-directory: ./api # api/ ディレクトリで実行
+        working-directory: ./api
         run: bundle install --jobs 4 --retry 3
 
       - name: Lint code for consistent style
-        working-directory: ./api # api/ ディレクトリで実行
+        working-directory: ./api
         run: bin/rubocop -f github
 
   test:
     runs-on: ubuntu-latest
-    # この 'CI' 環境は、nova_lance リポジトリの Settings > Environments で定義
-    # シークレットも同様に、nova_lance リポジトリに設定
     environment:
       name: CI
     services:
       postgres:
-        image: postgres:15 # またはアプリに合わせたバージョン
+        image: postgres:15
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }} # nova_lance リポジトリのシークレット
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         ports:
-          - 5432:5432 # ホストの5432番をコンテナの5432番に (DATABASE_URLと合わせる)
+          - 5432:5432
         options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
@@ -73,8 +68,8 @@ jobs:
       - name: Set up Ruby and cache gems for API
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version-file: "api/.ruby-version" # api/ ディレクトリ内の .ruby-version を参照
-          working-directory: ./api # bundler-cache が api/Gemfile.lock を正しく認識するために指定
+          ruby-version: .ruby-version
+          working-directory: ./api
           bundler-cache: true
 
       # 上記の bundler-cache: true でうまくいかない場合や、より明示的にしたい場合は、
@@ -89,11 +84,10 @@ jobs:
       #   run: bundle install --jobs 4 --retry 3
 
       - name: Run tests
-        working-directory: ./api # api/ ディレクトリで実行
+        working-directory: ./api
         env:
           RAILS_ENV: test
-          # postgresql サービスの ports で 5432:5432 としたので、localhost:5432 を使用
-          DATABASE_URL: postgres://postgres:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/your_api_test_database_name # DB名は適宜変更
+          DATABASE_URL: postgres://postgres:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/nova_lance_test
         run: |
           bundle exec rails db:prepare
-          bundle exec rails test # または bundle exec rspec
+          bundle exec rails test
