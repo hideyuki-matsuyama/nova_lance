@@ -12,10 +12,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Ruby
+      - name: Set up Ruby and cache gems for API
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "api/.ruby-version"
+          ruby-version-file: "api/.ruby-version"
+          working-directory: ./api
+          bundler-cache: true
 
       - name: Install API dependencies
         working-directory: ./api
@@ -34,7 +36,9 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "api/.ruby-version"
+          ruby-version-file: "api/.ruby-version"
+          working-directory: ./api
+          bundler-cache: true
 
       - name: Install API dependencies
         working-directory: ./api
@@ -68,20 +72,9 @@ jobs:
       - name: Set up Ruby and cache gems for API
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: .ruby-version
+          ruby-version-file: api/.ruby-version
           working-directory: ./api
           bundler-cache: true
-
-      # 上記の bundler-cache: true でうまくいかない場合や、より明示的にしたい場合は、
-      # ruby/setup-ruby から bundler-cache: true と working-directory: ./api を削除し、
-      # 以下のステップを代わりに追加します。
-      # - name: Set up Ruby
-      #   uses: ruby/setup-ruby@v1
-      #   with:
-      #     ruby-version-file: 'api/.ruby-version'
-      # - name: Install API dependencies
-      #   working-directory: ./api
-      #   run: bundle install --jobs 4 --retry 3
 
       - name: Run tests
         working-directory: ./api
