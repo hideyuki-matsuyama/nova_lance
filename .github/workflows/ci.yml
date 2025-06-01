@@ -1,0 +1,99 @@
+# .github/workflows/ci.yml (リポジトリルートに配置)
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  scan_ruby:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: "api/.ruby-version" # api/ ディレクトリ内の .ruby-version を参照
+          # bundler-cache は、working-directory との組み合わせで設定するか、
+          # このステップから削除し、次のステップで明示的に bundle install する
+
+      - name: Install API dependencies # scan の前に gem が必要なため
+        working-directory: ./api # api/ ディレクトリで実行
+        run: bundle install --jobs 4 --retry 3
+
+      - name: Scan for common Rails security vulnerabilities using static analysis
+        working-directory: ./api # api/ ディレクトリで実行
+        run: bin/brakeman --no-pager
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: "api/.ruby-version"
+
+      - name: Install API dependencies
+        working-directory: ./api # api/ ディレクトリで実行
+        run: bundle install --jobs 4 --retry 3
+
+      - name: Lint code for consistent style
+        working-directory: ./api # api/ ディレクトリで実行
+        run: bin/rubocop -f github
+
+  test:
+    runs-on: ubuntu-latest
+    # この 'CI' 環境は、nova_lance リポジトリの Settings > Environments で定義
+    # シークレットも同様に、nova_lance リポジトリに設定
+    environment:
+      name: CI
+    services:
+      postgres:
+        image: postgres:15 # またはアプリに合わせたバージョン
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }} # nova_lance リポジトリのシークレット
+        ports:
+          - 5432:5432 # ホストの5432番をコンテナの5432番に (DATABASE_URLと合わせる)
+        options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Install system packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev # pg gem のために必要
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby and cache gems for API
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: "api/.ruby-version" # api/ ディレクトリ内の .ruby-version を参照
+          working-directory: ./api # bundler-cache が api/Gemfile.lock を正しく認識するために指定
+          bundler-cache: true
+
+      # 上記の bundler-cache: true でうまくいかない場合や、より明示的にしたい場合は、
+      # ruby/setup-ruby から bundler-cache: true と working-directory: ./api を削除し、
+      # 以下のステップを代わりに追加します。
+      # - name: Set up Ruby
+      #   uses: ruby/setup-ruby@v1
+      #   with:
+      #     ruby-version-file: 'api/.ruby-version'
+      # - name: Install API dependencies
+      #   working-directory: ./api
+      #   run: bundle install --jobs 4 --retry 3
+
+      - name: Run tests
+        working-directory: ./api # api/ ディレクトリで実行
+        env:
+          RAILS_ENV: test
+          # postgresql サービスの ports で 5432:5432 としたので、localhost:5432 を使用
+          DATABASE_URL: postgres://postgres:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/your_api_test_database_name # DB名は適宜変更
+        run: |
+          bundle exec rails db:prepare
+          bundle exec rails test # または bundle exec rspec
