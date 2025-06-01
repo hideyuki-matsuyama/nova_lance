@@ -48,4 +48,4 @@ group :development, :test do
   gem "rspec-rails"
 end
 
-gem 'jsonapi-serializer'
+gem "jsonapi-serializer"
