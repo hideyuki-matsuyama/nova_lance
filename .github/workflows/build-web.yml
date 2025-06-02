@@ -1,0 +1,41 @@
+name: Build WEB
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  scan_ruby:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby and cache gems for API
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: "api/.ruby-version"
+          working-directory: ./api
+          bundler-cache: true
+
+      - name: Scan for common Rails security vulnerabilities using static analysis
+        working-directory: ./api
+        run: bin/brakeman --no-pager
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby and cache gems for API
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: "web/.ruby-version"
+          working-directory: ./web
+          bundler-cache: true
+
+      - name: Lint code for consistent style
+        working-directory: ./web
+        run: bin/rubocop -f github

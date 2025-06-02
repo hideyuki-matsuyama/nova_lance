@@ -5,9 +5,25 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 WORKDIR /rails_api
 
+COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
+RUN chmod +x /usr/local/bin/wait-for-it.sh
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+    apt-get install --no-install-recommends -y \
+        build-essential \
+        curl \
+        git \
+        libjemalloc2 \
+        libpq-dev \
+        libssl-dev \
+        libvips \
+        libxml2-dev \
+        libxslt1-dev \
+        libyaml-dev \
+        pkg-config \
+        postgresql-client \
+        ruby-dev \
+        zlib1g-dev \
+    && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
@@ -15,11 +31,6 @@ ENV RAILS_ENV="production" \
     BUNDLE_WITHOUT="development"
 
 FROM base AS build
-
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git pkg-config \
-        libpq-dev libyaml-dev ruby-dev && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
