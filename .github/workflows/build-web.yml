@@ -15,12 +15,12 @@ jobs:
       - name: Set up Ruby and cache gems for API
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version-file: "api/.ruby-version"
-          working-directory: ./api
+          ruby-version-file: "web/.ruby-version"
+          working-directory: ./web
           bundler-cache: true
 
       - name: Scan for common Rails security vulnerabilities using static analysis
-        working-directory: ./api
+        working-directory: ./web
         run: bin/brakeman --no-pager
 
   lint:
@@ -29,7 +29,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Ruby and cache gems for API
+      - name: Set up Ruby and cache gems for WEB
         uses: ruby/setup-ruby@v1
         with:
           ruby-version-file: "web/.ruby-version"
