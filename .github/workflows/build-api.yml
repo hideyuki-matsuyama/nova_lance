@@ -83,4 +83,4 @@ jobs:
           DATABASE_URL: postgres://postgres:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/nova_lance_test
         run: |
           bundle exec rails db:prepare
-          bundle exec rails test
+          bundle exec rails spec
