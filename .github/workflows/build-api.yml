@@ -19,10 +19,6 @@ jobs:
           working-directory: ./api
           bundler-cache: true
 
-      - name: Install API dependencies
-        working-directory: ./api
-        run: bundle install --jobs 4 --retry 3
-
       - name: Scan for common Rails security vulnerabilities using static analysis
         working-directory: ./api
         run: bin/brakeman --no-pager
@@ -33,16 +29,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Ruby
+      - name: Set up Ruby and cache gems for API
         uses: ruby/setup-ruby@v1
         with:
           ruby-version-file: "api/.ruby-version"
           working-directory: ./api
           bundler-cache: true
-
-      - name: Install API dependencies
-        working-directory: ./api
-        run: bundle install --jobs 4 --retry 3
 
       - name: Lint code for consistent style
         working-directory: ./api
@@ -64,7 +56,7 @@ jobs:
 
     steps:
       - name: Install system packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev # pg gem のために必要
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libpq-dev
 
       - name: Checkout code
         uses: actions/checkout@v4
