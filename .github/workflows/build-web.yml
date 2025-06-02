@@ -6,24 +6,8 @@ on:
     branches: [main]
 
 jobs:
-  scan_ruby:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby and cache gems for API
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version-file: "web/.ruby-version"
-          working-directory: ./web
-          bundler-cache: true
-
-      - name: Scan for common Rails security vulnerabilities using static analysis
-        working-directory: ./web
-        run: bin/brakeman --no-pager
-
-  lint:
+  scan_web_security:
+    name: Scan WEB for security (Brakeman)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -32,10 +16,26 @@ jobs:
       - name: Set up Ruby and cache gems for WEB
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version-file: "web/.ruby-version"
           working-directory: ./web
           bundler-cache: true
 
-      - name: Lint code for consistent style
+      - name: Scan WEB for security vulnerabilities
         working-directory: ./web
-        run: bin/rubocop -f github
+        run: bundle exec brakeman --no-pager
+
+  lint_web:
+    name: Lint WEB (RuboCop)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby and cache gems for WEB
+        uses: ruby/setup-ruby@v1
+        with:
+          working-directory: ./web
+          bundler-cache: true
+
+      - name: Lint WEB code for style
+        working-directory: ./web
+        run: bundle exec rubocop -f github

@@ -15,7 +15,6 @@ jobs:
       - name: Set up Ruby and cache gems for API
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version-file: "api/.ruby-version"
           working-directory: ./api
           bundler-cache: true
 
@@ -32,7 +31,6 @@ jobs:
       - name: Set up Ruby and cache gems for API
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version-file: "api/.ruby-version"
           working-directory: ./api
           bundler-cache: true
 
@@ -64,7 +62,6 @@ jobs:
       - name: Set up Ruby and cache gems for API
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version-file: api/.ruby-version
           working-directory: ./api
           bundler-cache: true
 
