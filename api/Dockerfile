@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1
+# check=error=true
 
 ARG RUBY_VERSION=3.4.4
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
@@ -7,6 +8,7 @@ WORKDIR /rails_api
 
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 RUN chmod +x /usr/local/bin/wait-for-it.sh
+
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
         build-essential \
@@ -33,7 +35,7 @@ ENV RAILS_ENV="production" \
 FROM base AS build
 
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
+RUN bundle check || bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
@@ -41,7 +43,6 @@ COPY . .
 
 RUN bundle exec bootsnap precompile app/ lib/
 
-# Final stage for app image
 FROM base
 
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
