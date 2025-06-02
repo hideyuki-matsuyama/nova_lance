@@ -23,7 +23,8 @@ jobs:
         working-directory: ./api
         run: bin/brakeman --no-pager
 
-  lint:
+  lint_api:
+    name: Lint API (RuboCop)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
