@@ -22,7 +22,6 @@ RUN apt-get update -qq && \
         yarn \
     && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Set production environment
 ENV RAILS_ENV="development" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT=""
@@ -31,35 +30,19 @@ FROM base AS build
 
 COPY Gemfile Gemfile.lock package.json yarn.lock ./
 RUN bundle check || bundle install && \
-    yarn install && \
+    yarn install --frozen-lockfile && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
-RUN echo "--- yarn install後のnode_modules/@hotwired の内容 ---" && \
-    ls -la node_modules/@hotwired || echo "node_modules/@hotwired が見つかりません"
-RUN echo "--- yarn install後のnode_modules/react の内容 ---" && \
-    ls -la node_modules/react || echo "node_modules/react が見つかりません"
-RUN echo "--- web/app/javascript/application.js の内容 ---" && \
-    cat app/javascript/application.js || echo "app/javascript/application.js が見つかりません"
-RUN echo "--- web/app/javascript/controllers/index.js の内容 ---" && \
-    cat app/javascript/controllers/index.js || echo "app/javascript/controllers/index.js が見つかりません"
-RUN echo "--- web/app/javascript/controllers/application.js (Stimulus) の内容 ---" && \
-    cat app/javascript/controllers/application.js || echo "app/javascript/controllers/application.js が見つかりません"
-RUN echo "--- web/package.json の scripts.build ---" && \
-    cat package.json | grep '"build":'
-
 COPY . .
 
-RUN bundle exec bootsnap precompile app/ lib/
-
-RUN yarn install --verbose # 詳細ログを出力
-RUN echo "--- Contents of web/node_modules/@hotwired ---" && ls -la node_modules/@hotwired || echo "node_modules/@hotwired not found"
-RUN echo "--- Contents of web/app/javascript/controllers ---" && ls -la app/javascript/controllers || echo "app/javascript/controllers not found"
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+# アセットのプリコンパイルを削除 (開発環境では bin/dev が処理する)
+# RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 FROM base
 
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
+COPY --from=build /rails_web/node_modules /rails_web/node_modules
 COPY --from=build /rails_web /rails_web
 
 RUN groupadd --system --gid 1000 rails && \

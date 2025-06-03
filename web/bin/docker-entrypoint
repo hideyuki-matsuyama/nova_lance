@@ -6,4 +6,6 @@ if [ -z "${LD_PRELOAD+x}" ]; then
     export LD_PRELOAD
 fi
 
+export PATH="/rails_web/node_modules/.bin:$PATH"
+
 exec "${@}"

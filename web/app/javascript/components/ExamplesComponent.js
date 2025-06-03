@@ -35,31 +35,35 @@ function ExamplesComponent() {
 
   return (
     <div>
-      <h1>Example リスト</h1>
-      {examples.length > 0 ? (
-        <ul>
-          {examples.map((example) => (
-            <li
-              key={example.id}
-              style={{
-                marginBottom: "10px",
-                borderBottom: "1px solid #eee",
-                paddingBottom: "10px",
-              }}
-            >
-              <strong>ID:</strong> {example.id} <br />
-              <strong>名:</strong> {example.first_name} <br />
-              <strong>姓:</strong> {example.last_name} <br />
-              <strong>作成日時:</strong>{" "}
-              {new Date(example.created_at).toLocaleString("ja-JP")} <br />
-              <strong>更新日時:</strong>{" "}
-              {new Date(example.updated_at).toLocaleString("ja-JP")}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>表示するデータがありません。</p>
-      )}
+      <h1>Example リスト🔥🔥</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>名</th>
+            <th>姓</th>
+            <th>作成日時</th>
+            <th>更新日時</th>
+          </tr>
+        </thead>
+        <tbody>
+          {examples.length > 0 ? (
+            examples.map((example) => (
+              <tr key={example.id}>
+                <td>{example.id}</td>
+                <td>{example.first_name}</td>
+                <td>{example.last_name}</td>
+                <td>{example.created_at}</td>
+                <td>{example.updated_at}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5">表示するデータがありません。</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }
