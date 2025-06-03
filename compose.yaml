@@ -56,8 +56,14 @@ services:
     container_name: nova_lance_web
     command: >
       bash -c "
-        bundle config --local path /usr/local/bundle &&
+        rm -f /rails_web/.bundle/config &&
+        export BUNDLE_PATH=/usr/local/bundle &&
+        bundle config --global path /usr/local/bundle &&
+        bundle config --global without development:test &&
+        bundle config --global deployment false &&
+        echo '--- Running bundle check ---' &&
         bundle check &&
+        echo '--- Bundle check passed. Starting application... ---' &&
         rm -f tmp/pids/server.pid &&
         bundle exec puma -C config/puma.rb
       "
@@ -67,7 +73,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      BUNDLE_WITHOUT: ""
+      BUNDLE_WITHOUT: "development:test"
       RAILS_ENV: development
       RAILS_LOG_TO_STDOUT: true
     networks:

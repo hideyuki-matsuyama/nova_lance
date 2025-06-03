@@ -35,5 +35,8 @@ module Web
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Propshaft が esbuild の出力ディレクトリを参照できるようにパスを追加
+    config.assets.paths << Rails.root.join("app/assets/builds")
   end
 end

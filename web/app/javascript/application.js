@@ -1,3 +1,18 @@
-// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
-import "@hotwired/turbo-rails"
-import "controllers"
+import "@hotwired/turbo-rails";
+import "./controllers";
+
+import React from "react";
+import ReactDOM from "react-dom/client";
+import ExamplesComponent from "./components/ExamplesComponent";
+
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.getElementById("react-examples-container");
+  if (container) {
+    const root = ReactDOM.createRoot(container);
+    root.render(
+      <React.StrictMode>
+        <ExamplesComponent />
+      </React.StrictMode>
+    );
+  }
+});
