@@ -36,9 +36,9 @@ function ExamplesComponent() {
   return (
     <div>
       <h1>Example リスト🔥🔥</h1>
-      <table>
+      <table className="min-w-full">
         <thead>
-          <tr>
+          <tr className="hover:bg-gray-100">
             <th>ID</th>
             <th>名</th>
             <th>姓</th>
@@ -52,7 +52,7 @@ function ExamplesComponent() {
               <tr key={example.id}>
                 <td>{example.id}</td>
                 <td>{example.first_name}</td>
-                <td>{example.last_name}</td>
+                <td className="text-2xl font-medium">{example.last_name}</td>
                 <td>{example.created_at}</td>
                 <td>{example.updated_at}</td>
               </tr>

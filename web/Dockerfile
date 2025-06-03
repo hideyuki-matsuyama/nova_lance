@@ -31,10 +31,13 @@ FROM base AS build
 COPY Gemfile Gemfile.lock package.json yarn.lock ./
 RUN bundle check || bundle install && \
     yarn install --frozen-lockfile && \
+    npx update-browserslist-db@latest && \
+    gem update --system && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
 COPY . .
+RUN chmod +x bin/rails
 
 # アセットのプリコンパイルを削除 (開発環境では bin/dev が処理する)
 # RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
