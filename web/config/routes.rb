@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
-  resources :examples, only: %i(index)
+  resources :examples, only: [ :index ]
 end
