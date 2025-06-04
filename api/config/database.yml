@@ -9,7 +9,7 @@ default: &default
 
 development:
   <<: *default
-  database: nova_lance_development %>
+  database: nova_lance_development
 
 test:
   <<: *default

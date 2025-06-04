@@ -30,3 +30,6 @@ module Api
     config.api_only = true
   end
 end
+
+Rails.application.config.i18n.default_locale = :ja
+Faker::Config.locale = :ja
