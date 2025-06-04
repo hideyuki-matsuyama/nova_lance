@@ -28,16 +28,15 @@ RUN apt-get update -qq && \
     && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+    BUNDLE_WITHOUT="development test"
 
 FROM base AS build
 
 COPY Gemfile Gemfile.lock ./
-RUN bundle check || bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
+RUN bundle config set --global frozen false && \
+    bundle install --jobs $(nproc) --retry 3 && \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 
 COPY . .
 
@@ -49,9 +48,10 @@ COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails_api /rails_api
 
 RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-USER 1000:1000
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
+RUN chown -R rails:rails /usr/local/bundle && \
+    chown -R rails:rails db log storage tmp /rails_api
+USER rails
 
 ENTRYPOINT ["/rails_api/bin/docker-entrypoint"]
 
