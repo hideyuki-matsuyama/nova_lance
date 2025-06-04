@@ -48,8 +48,8 @@ group :development, :test do
   gem "rspec-rails"
 
   gem "faker"
-  gem 'gimei'
-  gem 'rails-i18n'
+  gem "gimei"
+  gem "rails-i18n"
 end
 
 gem "jsonapi-serializer"
