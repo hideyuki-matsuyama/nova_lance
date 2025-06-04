@@ -1,16 +1,15 @@
 class ExamplesController < ApplicationController
-  before_action :set_example, only: %i[ show update destroy ]
+  before_action :set_example, only: %i[show update destroy]
 
   # GET /examples
   def index
     @examples = Example.all
-
     render json: @examples
   end
 
   # GET /examples/1
   def show
-    render json: @example
+    render json： @example
   end
 
   # POST /examples
@@ -39,13 +38,14 @@ class ExamplesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_example
-      @example = Example.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def example_params
-      params.fetch(:example, {})
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_example
+    @example = Example.find(params.expect(:id))
+  end
+
+  # Only allow a list of trusted parameters through.
+  def example_params
+    params.fetch(:example, {})
+  end
 end
