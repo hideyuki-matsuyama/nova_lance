@@ -34,27 +34,69 @@ function ExamplesComponent() {
   }
 
   return (
-    <div>
-      <h1>Example リスト🔥🔥</h1>
-      <table className="min-w-full">
-        <thead>
+    <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+      <h1 className="text-xl font-semibold text-gray-800 dark:text-neutral-200">
+        Example リスト🔥
+      </h1>
+      <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+        <thead className="bg-gray-50 dark:bg-neutral-800">
           <tr>
-            <th>ID</th>
-            <th>名</th>
-            <th>姓</th>
-            <th>作成日時</th>
-            <th>更新日時</th>
+            <th scope="col" className="px-6 py-3 text-start whitespace-nowrap">
+              <span className="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                ID
+              </span>
+            </th>
+            <th scope="col" className="px-6 py-3 text-start whitespace-nowrap">
+              <span className="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                名
+              </span>
+            </th>
+            <th scope="col" className="px-6 py-3 text-start whitespace-nowrap">
+              <span className="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                姓
+              </span>
+            </th>
+            <th scope="col" className="px-6 py-3 text-start whitespace-nowrap">
+              <span className="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                作成日時
+              </span>
+            </th>
+            <th scope="col" className="px-6 py-3 text-start whitespace-nowrap">
+              <span className="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                更新日時
+              </span>
+            </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-gray-200 dark:divide-neutral-700">
           {examples.length > 0 ? (
             examples.map((example) => (
               <tr key={example.id}>
-                <td>{example.id}</td>
-                <td>{example.first_name}</td>
-                <td>{example.last_name}</td>
-                <td>{example.created_at}</td>
-                <td>{example.updated_at}</td>
+                <td className="size-px whitespace-nowrap px-6 py-3">
+                  <span className="text-sm text-gray-800 dark:text-white">
+                    {example.id}
+                  </span>
+                </td>
+                <td className="size-px whitespace-nowrap px-6 py-3">
+                  <span className="text-sm text-gray-800 dark:text-white">
+                    {example.first_name}
+                  </span>
+                </td>
+                <td className="size-px whitespace-nowrap px-6 py-3">
+                  <span className="text-sm text-gray-800 dark:text-white">
+                    {example.last_name}
+                  </span>
+                </td>
+                <td className="size-px whitespace-nowrap px-6 py-3">
+                  <span className="text-sm text-gray-800 dark:text-white">
+                    {example.created_at}
+                  </span>
+                </td>
+                <td className="size-px whitespace-nowrap px-6 py-3">
+                  <span className="text-sm text-gray-800 dark:text-white">
+                    {example.updated_at}
+                  </span>
+                </td>
               </tr>
             ))
           ) : (
