@@ -3,13 +3,13 @@ class ExamplesController < ApplicationController
 
   # GET /examples
   def index
-    @examples = Example.all
+    @examples = Example.all.order(:id)
     render json: @examples
   end
 
   # GET /examples/1
   def show
-    render json： @example
+    render json: @example
   end
 
   # POST /examples
@@ -46,6 +46,6 @@ class ExamplesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def example_params
-    params.fetch(:example, {})
+    params.permit(:first_name, :last_name)
   end
 end
