@@ -75,7 +75,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      BUNDLE_WITHOUT: "development:test"
+      BUNDLE_WITHOUT: ""
       RAILS_ENV: development
       RAILS_LOG_TO_STDOUT: true
     networks:
