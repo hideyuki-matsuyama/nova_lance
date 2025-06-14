@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Example.delete_all
 20.times do
   faker = Faker::Name.unique

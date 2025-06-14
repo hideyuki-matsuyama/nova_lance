@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   include Discard::Model
   include Devise::JWT::RevocationStrategies::JTIMatcher
@@ -6,7 +8,8 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
 
-  validates :email, uniqueness: true, presence: true, length: { maximum: 50 }, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :email, uniqueness: true, presence: true, length: { maximum: 50 },
+                    format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :password, length: { minimum: 6, maximum: 20 }, on: :create
   validates :nickname, presence: true, length: { maximum: 50 }
   validates :first_name, length: { maximum: 30 }

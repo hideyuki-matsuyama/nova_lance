@@ -1,6 +1,8 @@
-require_relative "boot"
+# frozen_string_literal: true
 
-require "rails/all"
+require_relative 'boot'
+
+require 'rails/all'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -31,16 +33,18 @@ module Api
     config.middleware.use Warden::Manager do |manager|
       manager.default_strategies(:user).unshift :jwt
       # 認証失敗時のJSONレスポンスを返すカスタム`failure_app`を設定することもできます
-      manager.failure_app = ->(env){ [401, {'Content-Tyape' => 'application/json'}, [{error: 'Unauthorized'}.to_json]] }
+      manager.failure_app = lambda { |_env|
+        [401, { 'Content-Tyape' => 'application/json' }, [{ error: 'Unauthorized' }.to_json]]
+      }
     end
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins "*" # 本番では特定のドメインを指定
-        resource "*",
-          headers: :any,
-          methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
-          expose: [ "Authorization" ] # JWT認証のためにAuthorizationヘッダーを公開
+        origins '*' # 本番では特定のドメインを指定
+        resource '*',
+                 headers: :any,
+                 methods: %i[get post put patch delete options head],
+                 expose: ['Authorization'] # JWT認証のためにAuthorizationヘッダーを公開
       end
     end
 

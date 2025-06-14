@@ -1,7 +1,21 @@
+# # Omakase Ruby styling for Rails
+# inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+
 plugins:
   - rubocop-rails
   - rubocop-performance
   - rubocop-rspec
+
+Style/Documentation:
+  Enabled: false
+
+Layout/LineLength:
+  Exclude:
+    - 'config/initializers/devise.rb'
+
+Metrics/MethodLength:
+  Exclude:
+    - 'db/migrate/*.rb'
 
 # .rubocop.yml
 # plugins:
