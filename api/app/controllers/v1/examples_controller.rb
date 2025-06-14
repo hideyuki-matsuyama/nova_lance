@@ -1,11 +1,11 @@
 class V1::ExamplesController < ApplicationController
-  puts ApplicationController.instance_methods.select { |m| m.start_with? 'authenticate_' }
-
   before_action :set_example, only: %i[show update destroy]
 
   # GET /examples
   def index
     @examples = Example.all.order(:id)
+    puts "aa"
+    puts 'aa'
     render json: @examples
   end
 
