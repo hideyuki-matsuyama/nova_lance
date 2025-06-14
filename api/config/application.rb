@@ -24,6 +24,26 @@ module Api
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    config.after_initialize do
+      ActionController::API.include(Devise::Controllers::Helpers)
+    end
+
+    config.middleware.use Warden::Manager do |manager|
+      manager.default_strategies(:user).unshift :jwt
+      # 認証失敗時のJSONレスポンスを返すカスタム`failure_app`を設定することもできます
+      manager.failure_app = ->(env){ [401, {'Content-Tyape' => 'application/json'}, [{error: 'Unauthorized'}.to_json]] }
+    end
+
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins "*" # 本番では特定のドメインを指定
+        resource "*",
+          headers: :any,
+          methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
+          expose: [ "Authorization" ] # JWT認証のためにAuthorizationヘッダーを公開
+      end
+    end
+
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.

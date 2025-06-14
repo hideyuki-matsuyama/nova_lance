@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_27_103009) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_12_141939) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -19,5 +19,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_27_103009) do
     t.string "last_name", comment: "姓"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "jwt_denylists", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email", null: false, comment: "メールアドレス"
+    t.string "nickname", null: false, comment: "ニックネーム"
+    t.string "first_name", comment: "名"
+    t.string "last_name", comment: "姓"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 end
